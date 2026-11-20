@@ -1,0 +1,23 @@
+name: Generate and Sign SBOM
+on:
+  push:
+    branches: [ "main" ]
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx-json
+          output-file: 'sbom.json'
+      - name: Attest SBOM
+        uses: actions/attest-sbom@v1
+        with:
+          subject-path: 'README.md'
+          sbom-path: 'sbom.json'
